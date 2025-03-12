@@ -50,7 +50,9 @@ public class UserServiceImpl implements UserService {
         }
         var employee = createUser(user);
         employee.setRole(UserRoleEnum.EMPLOYEE);
-        return objectMapper.convertValue(userRepository.save(employee), UserResponse.class);
+        User savedUser = userRepository.save(employee);
+        LOGGER.info(savedUser.toString());
+        return objectMapper.convertValue(employee, UserResponse.class);
     }
 
     private User createUser(UserRequest request) {

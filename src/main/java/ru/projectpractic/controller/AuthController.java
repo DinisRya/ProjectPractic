@@ -15,9 +15,14 @@ public class AuthController {
         this.userService = userService;
     }
 
+    @GetMapping("registration")
+    public String register(){
+        return "registration_choice";
+    }
+
     @GetMapping("/register/student")
     public String getRegisterStudentPage() {
-        return "registration";
+        return "registration_students";
     }
 
     @PostMapping("/register/student")
@@ -31,7 +36,7 @@ public class AuthController {
 
     @GetMapping("/register/employee")
     public String getRegisterEmployeePage() {
-        return "registration";
+        return "registration_employees";
     }
 
     @PostMapping("/register/employee")
