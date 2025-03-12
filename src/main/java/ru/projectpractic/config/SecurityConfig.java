@@ -4,11 +4,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -17,22 +17,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-
-import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
     private final static Logger LOGGER = LogManager.getLogger();
-    private DataSource dataSource;
+    private final CustomUserDetailsService customUserDetailsService;
 
-    @Autowired
-    public SecurityConfig(DataSource dataSource) {
-        this.dataSource = dataSource;
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Bean
@@ -41,8 +36,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JdbcUserDetailsManager user() {
-        return new JdbcUserDetailsManager(dataSource);
+    public DaoAuthenticationProvider daoAuthenticationProvider()
+    {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(customUserDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
     }
 
     @Bean
@@ -50,7 +49,7 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
-                                "/", "/registration", "swagger-ui").permitAll()
+                                "/", "/register/**", "/swagger-ui").permitAll()
                         .requestMatchers("/admin").hasAuthority("ADMIN")
                         .requestMatchers("/students/**").hasAuthority("STUDENT")
                         .requestMatchers("/employee/**").hasAuthority("EMPLOYEE")
@@ -58,6 +57,7 @@ public class SecurityConfig {
                 )
 
                 .formLogin(login -> {
+                    login.loginPage("/login");
                     login.successHandler((request, response, authentication) ->
                             LOGGER.info("login successful")
                     ).permitAll();
@@ -65,11 +65,11 @@ public class SecurityConfig {
                             response.sendError(HttpStatus.UNAUTHORIZED.value())));
                 })
                 .httpBasic(Customizer.withDefaults())
-                .logout(logout -> logout.permitAll()
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setStatus(HttpServletResponse.SC_OK);
-                            LOGGER.info("User logged out");
-                        }))
+//                .logout(logout -> logout.permitAll()
+//                        .logoutSuccessHandler((request, response, authentication) -> {
+//                            response.setStatus(HttpServletResponse.SC_OK);
+//                            LOGGER.info("User logged out");
+//                        }))
                 .build();
 
     }

@@ -9,5 +9,9 @@ spring:
       password: postgres
       url: jdbc:postgresql://localhost:5432/database
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+
 server:
   port: 3000

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<body>
+<header th:insert="~{blocks/header :: header}"></header>
+    <h1>Hello, u a welcome</h1>
+    <br>
+    <br>
+    <br>
+    <h2>See u in hell</h2>
+
+
+    <form th:action="@{/logout}" method="post" class="nav-link">
+        <input type="submit" value="Log Out"/>
+    </form>
+<footer th:insert="~{blocks/footer :: footer}"></footer>
+</body>
+</html>
