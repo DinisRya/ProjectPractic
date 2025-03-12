@@ -15,4 +15,6 @@ public interface StudentService {
     List<StudentResponse> findAll();
 
     void delete(Long id);
+
+    StudentResponse findByUserId(Long userId);
 }

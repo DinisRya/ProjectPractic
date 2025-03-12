@@ -50,7 +50,7 @@ public class SecurityConfig {
                                 "/", "/register/**", "/swagger-ui", "/registration").permitAll()
                         .requestMatchers("/admin").hasRole(UserRoleEnum.ADMIN.getValue())
                         .requestMatchers("/students/**").hasRole(UserRoleEnum.STUDENT.getValue())
-                        .requestMatchers("/employee/**", "/check").hasRole(UserRoleEnum.EMPLOYEE.getValue())
+                        .requestMatchers("/employees/**", "/check").hasRole(UserRoleEnum.EMPLOYEE.getValue())
                         .anyRequest().authenticated()
                 )
 

@@ -1,4 +1,9 @@
 package ru.projectpractic.dto.request;
 
-public class JobRequest {
+public record JobRequest(
+        String description,
+        String photo,
+        String title,
+        Long employeeId
+) {
 }

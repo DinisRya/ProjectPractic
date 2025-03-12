@@ -75,4 +75,10 @@ public class StudentServiceImpl implements StudentService {
         //validate exists
         studentRepository.deleteById(id);
     }
+
+    @Override
+    public StudentResponse findByUserId(Long userId) {
+        return objectMapper.convertValue(studentRepository.findByUserId(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Student")), StudentResponse.class);
+    }
 }

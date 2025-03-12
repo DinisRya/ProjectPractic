@@ -1,4 +1,9 @@
 package ru.projectpractic.dto.request;
 
-public class ApplicationRequest {
+public record ApplicationRequest(
+        String coverLetter,
+        Long jobId,
+        Long studentId
+) {
+
 }

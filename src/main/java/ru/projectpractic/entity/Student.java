@@ -10,8 +10,6 @@ import lombok.Setter;
 @Table(name = "students")
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,4 +28,44 @@ public class Student {
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getResume() {
+        return resume;
+    }
+
+    public void setResume(String resume) {
+        this.resume = resume;
+    }
+
+    public String getFaculty() {
+        return faculty;
+    }
+
+    public void setFaculty(String faculty) {
+        this.faculty = faculty;
+    }
+
+    public Integer getCourseOfStudy() {
+        return courseOfStudy;
+    }
+
+    public void setCourseOfStudy(Integer courseOfStudy) {
+        this.courseOfStudy = courseOfStudy;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
