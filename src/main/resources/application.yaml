@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: ProjectPractic
+  jpa:
+    hibernate:
+      ddl-auto: update
+    datasource:
+      username: postgres
+      password: postgres
+      url: jdbc:postgresql://localhost:5432/database
+
+server:
+  port: 3000
