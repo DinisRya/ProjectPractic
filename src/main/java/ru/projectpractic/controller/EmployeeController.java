@@ -4,10 +4,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import ru.projectpractic.dto.request.EmployeeRequest;
+import ru.projectpractic.dto.request.JobRequest;
 import ru.projectpractic.dto.response.ApplicationResponse;
 import ru.projectpractic.service.ApplicationsService;
 import ru.projectpractic.service.EmployeeService;
@@ -63,9 +62,48 @@ public class EmployeeController {
         return "applications";
     }
 
+    @GetMapping("/add/job/{employee_id}")
+    public String getAddJob(
+            @PathVariable("employee_id") Long employeeId,
+            Model model
+    ) {
+        model.addAttribute("employee_id", employeeId);
+        return "add_job";
+    }
 
-    //Создание работы
-    //Создание employee
+    @PostMapping("add/job/{employee_id}")
+    public String addJob(
+            @RequestParam String description,
+            @RequestParam String title,
+            @PathVariable("employee_id") Long employeeId
+            ) {
+        jobService.create(new JobRequest(
+                description,
+                null,
+                title,
+                employeeId
+        ));
+        return "employee_jobs";
+    }
+
+    @GetMapping("add/employee")
+    public String addEmployee() {
+        return "add_employee";
+    }
+
+    @PostMapping("add/employee")
+    public String createEmployee(
+            @RequestParam String department,
+            @RequestParam String organization
+    ) {
+        employeeService.create(new EmployeeRequest(
+                department,
+                organization,
+                getUserId()
+        ));
+        return "redirect:/welcome";
+    }
+
     private long getUserId() {
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();

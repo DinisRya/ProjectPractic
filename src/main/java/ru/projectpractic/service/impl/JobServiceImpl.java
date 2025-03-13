@@ -2,8 +2,10 @@ package ru.projectpractic.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
+import ru.projectpractic.dto.request.JobRequest;
 import ru.projectpractic.dto.response.JobResponse;
 import ru.projectpractic.entity.Employee;
+import ru.projectpractic.entity.Job;
 import ru.projectpractic.exception.EntityNotFoundException;
 import ru.projectpractic.repository.EmployeeRepository;
 import ru.projectpractic.repository.JobRepository;
@@ -43,5 +45,26 @@ public class JobServiceImpl implements JobService {
                 new EntityNotFoundException("Employee"));
         return jobRepository.findAllByEmployeeId(employee.getId()).stream()
                 .map(job -> objectMapper.convertValue(job, JobResponse.class)).toList();
+    }
+
+    @Override
+    public JobResponse create(JobRequest request) {
+        Job job = new Job();
+        job.setDescription(request.description());
+        job.setEmployee(employeeRepository.findById(request.employeeId()).orElseThrow(() ->
+                new EntityNotFoundException("Employee")));
+        job.setTitle(request.title());
+        return objectMapper.convertValue(jobRepository.save(job), JobResponse.class);
+    }
+
+    @Override
+    public JobResponse update(JobRequest request, Long jobId) {
+        Job job = jobRepository.findById(jobId).orElseThrow(() ->
+                new EntityNotFoundException("Job"));
+        job.setDescription(request.description());
+        job.setEmployee(employeeRepository.findById(request.employeeId()).orElseThrow(() ->
+                new EntityNotFoundException("Employee")));
+        job.setTitle(request.title());
+        return objectMapper.convertValue(jobRepository.save(job), JobResponse.class);
     }
 }
