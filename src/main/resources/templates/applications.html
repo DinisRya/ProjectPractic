@@ -11,14 +11,13 @@
 <header th:insert="~{blocks/header :: header}"></header>
 
     <h2>Jobs</h2>
-    <a th:href="'/employees/job/add'" class="btn btn-primary mb-2">Создать мероприятие</a>
 
-    <div th:each="application : ${applications}" class="card mb-3">
+    <div th:each="app : ${applications}" class="card mb-3">
         <div class="card-body">
-            <h3 class="card-title">Сопроводительное письмо: <a th:text="${application.coverLetter()}"
-                                                th:href="@{'/students/profile/' + ${application.studentId()}}"/></h3>
-            <a th:href="@{'/employees/application/approve/' + ${application.id()}}" class="btn btn-success">Приглашение</a>
-            <a th:href="@{'/employees/application/reject/' + ${application.id()}}" class="btn btn-success">Отказ</a>
+            <h3 class="card-title">Сопроводительное письмо: <a th:text="${app.coverLetter()}"
+                                                th:href="@{'/students/profile/' + ${app.studentId()}}"/></h3>
+            <a th:href="@{/employees/application/approve/{application_id}(application_id=${app.id})}" class="btn btn-success">Приглашение</a>
+            <a th:href="@{/employees/application/reject/{application_id}(application_id=${app.id})}" class="btn btn-success">Отказ</a>
         </div>
     </div>
 

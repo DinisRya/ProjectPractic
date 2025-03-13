@@ -7,10 +7,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.projectpractic.dto.request.UserRequest;
 import ru.projectpractic.dto.response.UserResponse;
+import ru.projectpractic.entity.Employee;
+import ru.projectpractic.entity.Student;
 import ru.projectpractic.entity.User;
 import ru.projectpractic.exception.EntityNotFoundException;
 import ru.projectpractic.exception.UsernameAlreadyInUseException;
+import ru.projectpractic.repository.EmployeeRepository;
+import ru.projectpractic.repository.StudentRepository;
 import ru.projectpractic.repository.UserRepository;
+import ru.projectpractic.service.StudentService;
 import ru.projectpractic.service.UserService;
 import ru.projectpractic.utils.UserRoleEnum;
 
@@ -22,11 +27,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
+    private final StudentRepository studentRepository;
+    private final EmployeeRepository employeeRepository;
 
-    public UserServiceImpl(UserRepository userRepository, ObjectMapper objectMapper, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, ObjectMapper objectMapper, PasswordEncoder passwordEncoder, StudentRepository studentRepository, EmployeeRepository employeeRepository) {
         this.userRepository = userRepository;
         this.objectMapper = objectMapper;
         this.passwordEncoder = passwordEncoder;
+        this.studentRepository = studentRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     @Override
@@ -39,7 +48,14 @@ public class UserServiceImpl implements UserService {
         student.setRole(UserRoleEnum.STUDENT);
         User savedUser = userRepository.save(student);
         LOGGER.info(savedUser.toString());
+        setStudent(savedUser);
         return objectMapper.convertValue(savedUser, UserResponse.class);
+    }
+
+    private void setStudent(User user) {
+        Student student = new Student();
+        student.setUser(user);
+        studentRepository.save(student);
     }
 
     @Override
@@ -52,7 +68,14 @@ public class UserServiceImpl implements UserService {
         employee.setRole(UserRoleEnum.EMPLOYEE);
         User savedUser = userRepository.save(employee);
         LOGGER.info(savedUser.toString());
+        setEmployee(savedUser);
         return objectMapper.convertValue(employee, UserResponse.class);
+    }
+
+    private void setEmployee(User user) {
+        Employee employee = new Employee();
+        employee.setUser(user);
+        employeeRepository.save(employee);
     }
 
     private User createUser(UserRequest request) {

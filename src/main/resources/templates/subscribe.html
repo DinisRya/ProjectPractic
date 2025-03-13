@@ -10,16 +10,19 @@
 <body>
 <header th:insert="~{blocks/header :: header}"></header>
 
-    <h2>Jobs</h2>
+<div class="container mt-4">
+    <h2>Подать заявку</h2>
 
-    <div th:each="job : ${jobs}" class="card mb-3">
-        <div class="card-body">
-            <h3 class="card-title">Название: <a th:text="${job.title()}"
-                                                th:href="@{'/jobs/' + ${job.id()}}"/></h3>
-            <p class="card-text">Описание: <span th:text="${job.description()}" /></p>
-            <a th:href="@{'/employees/applications/' + ${job.id()}}" class="btn btn-success">Заявки</a>
+    <form th:action="@{/students/job/subscribe/{job_id}(job_id=${job_id})}" method="post">
+        <div class="mb-3">
+            <label for="coverLetter" class="form-label">Сопроводительное письмо</label>
+            <textarea class="form-control" id="coverLetter" name="cover_letter" rows="4" required></textarea>
         </div>
-    </div>
+
+        <button type="submit" class="btn btn-success">Отправить</button>
+        <a href="/employees/jobs" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
 
 <footer th:insert="~{blocks/footer :: footer}"></footer>
 </body>

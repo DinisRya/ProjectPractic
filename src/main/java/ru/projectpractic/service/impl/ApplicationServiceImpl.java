@@ -50,7 +50,7 @@ public class ApplicationServiceImpl implements ApplicationsService {
         application.setStatus(ApplicationsStatusEnum.WAITING);
         application.setJob(jobRepository.findById(request.jobId()).orElseThrow(() ->
                 new EntityNotFoundException("Job")));
-        application.setStudent(studentRepository.findById(request.studentId()).orElseThrow(() ->
+        application.setStudent(studentRepository.findByUserId(request.userId()).orElseThrow(() ->
                 new EntityNotFoundException("Student")));
         return objectMapper.convertValue(applicationRepository.save(application), ApplicationResponse.class);
     }

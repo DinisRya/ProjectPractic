@@ -52,6 +52,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResponse findByUserId(Long userId) {
-        return null;
+        return objectMapper.convertValue(
+                employeeRepository.findByUserId(userId).orElseThrow(() ->
+                        new EntityNotFoundException("Employee")),
+                EmployeeResponse.class
+        );
     }
 }

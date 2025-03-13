@@ -21,7 +21,7 @@ public class Application {
     @Column(name = "status", nullable = false)
     private ApplicationsStatusEnum status;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
 

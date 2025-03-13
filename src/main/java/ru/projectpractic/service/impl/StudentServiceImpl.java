@@ -50,7 +50,7 @@ public class StudentServiceImpl implements StudentService {
         var student = studentRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Student"));
 
-        return objectMapper.convertValue(setValues(request, student), StudentResponse.class);
+        return objectMapper.convertValue(studentRepository.save(setValues(request, student)), StudentResponse.class);
     }
 
     @Override

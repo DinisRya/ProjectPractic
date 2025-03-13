@@ -51,7 +51,7 @@ public class EmployeeController {
             @PathVariable("application_id") Long applicationId
     ) {
         applicationsService.reject(applicationId);
-        return "applications";
+        return "redirect:/welcome";
     }
 
     @PostMapping("/application/approve/{application_id}")
@@ -59,7 +59,7 @@ public class EmployeeController {
             @PathVariable("application_id") Long applicationId
     ) {
         applicationsService.approve(applicationId);
-        return "applications";
+        return "redirect:/welcome";
     }
 
     @GetMapping("/add/job/{employee_id}")
@@ -83,25 +83,36 @@ public class EmployeeController {
                 title,
                 employeeId
         ));
-        return "employee_jobs";
+        return "redirect:/employees/jobs";
     }
 
-    @GetMapping("add/employee")
-    public String addEmployee() {
+    @GetMapping("update/employee/{employee_id}")
+    public String addEmployee(
+            @PathVariable("employee_id") Long employeeId,
+            Model model) {
+        model.addAttribute("employee_id", employeeId);
         return "add_employee";
     }
 
-    @PostMapping("add/employee")
+    @PostMapping("update/employee/{employee_id}")
     public String createEmployee(
+            @PathVariable("employee_id") Long employeeId,
             @RequestParam String department,
             @RequestParam String organization
     ) {
-        employeeService.create(new EmployeeRequest(
+        employeeService.update(new EmployeeRequest(
                 department,
                 organization,
-                getUserId()
-        ));
-        return "redirect:/welcome";
+                getUserId()),
+                employeeId);
+        return "redirect:/employees/profile";
+    }
+
+    @GetMapping("/profile")
+    public String profile(Model model) {
+        model.addAttribute("employee",
+                employeeService.findByUserId(getUserId()));
+        return "employee_profile";
     }
 
     private long getUserId() {

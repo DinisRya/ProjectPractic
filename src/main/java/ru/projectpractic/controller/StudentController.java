@@ -1,5 +1,7 @@
 package ru.projectpractic.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/students")
 public class StudentController {
+    private static final Logger LOGGER = LogManager.getLogger();
     private final JobService jobService;
     private final UserService userService;
     private final ApplicationsService applicationsService;
@@ -38,6 +41,16 @@ public class StudentController {
         return "jobs";
     }
 
+    @GetMapping("/job/subscribe/{job_id}")
+    public String getSub(
+            @PathVariable("job_id") Long jobId,
+            Model model
+    ) {
+        model.addAttribute("job_id", jobId);
+        return "subscribe";
+    }
+
+
     @PostMapping("/job/subscribe/{job_id}")
     public String subscribe(
             @RequestParam("cover_letter") String coverLetter,
@@ -54,53 +67,57 @@ public class StudentController {
         return userService.findByUsername(username).id();
     }
 
-    @GetMapping("/profile/{student_id}")
+    @GetMapping("/profile")
     public String getProfile(
-            @PathVariable("student_id") Long studentId,
             Model model
     ) {
-        StudentResponse response = studentService.findById(studentId);
-        model.addAttribute("student", response);
+        model.addAttribute("student", studentService.findByUserId(getUserId()));
         return "student_profile";
     }
 
-    @GetMapping("/create/profile")
-    public String createProfile() {
-        return "create_profile";
-    }
+//    @GetMapping("/create/profile")
+//    public String createProfile() {
+//        return "create_profile";
+//    }
 
-    @GetMapping("/update/profile")
-    public String updateProfile() {
+    @GetMapping("/update/profile/{student_id}")
+    public String updateProfile(
+            @PathVariable("student_id") Long studentId,
+            Model model
+    ) {
+        model.addAttribute("student_id", studentId);
         return "update_profile";
     }
 
-    @PostMapping("/create/profile")
-    public String createProfile(
-            @RequestParam("course_of_study") Integer courseOfStudy,
-            @RequestParam("faculty") String faculty,
-            @RequestParam("resume") String resume
-    ) {
-        studentService.create(new StudentRequest(
-                courseOfStudy,
-                faculty,
-                resume,
-                getUserId()
-        ));
-        return "redirect:/welcome";
-    }
+//    @PostMapping("/create/profile")
+//    public String createProfile(
+//            @RequestParam("course_of_study") Integer courseOfStudy,
+//            @RequestParam("faculty") String faculty,
+//            @RequestParam("resume") String resume
+//    ) {
+//        studentService.create(new StudentRequest(
+//                courseOfStudy,
+//                faculty,
+//                resume,
+//                getUserId()
+//        ));
+//        return "redirect:/welcome";
+//    }
 
-    @PostMapping("/update/profile")
+    @PostMapping("/update/profile/{student_id}")
     public String updateProfile(
+            @PathVariable("student_id") Long studentId,
             @RequestParam("course_of_study") Integer courseOfStudy,
             @RequestParam("faculty") String faculty,
             @RequestParam("resume") String resume
     ) {
-        studentService.update(new StudentRequest(
+        var a = studentService.update(new StudentRequest(
                 courseOfStudy,
                 faculty,
                 resume,
                 getUserId()
-        ), studentService.findByUserId(getUserId()).id());
-        return "redirect:/welcome";
+        ), studentId);
+        LOGGER.info(a.courseOfStudy());
+        return "redirect:/students/profile";
     }
 }

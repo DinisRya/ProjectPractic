@@ -64,11 +64,11 @@ public class SecurityConfig {
 //                            response.sendError(HttpStatus.UNAUTHORIZED.value())));
                 })
 //                .httpBasic(Customizer.withDefaults())
-                .logout(logout -> logout.permitAll()
-                        .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setStatus(HttpServletResponse.SC_OK);
-                            LOGGER.info("User logged out");
-                        }))
+//                .logout(logout -> logout.permitAll()
+//                        .logoutSuccessHandler((request, response, authentication) -> {
+//                            response.setStatus(HttpServletResponse.SC_OK);
+//                            LOGGER.info("User logged out");
+//                        }))
                 .build();
 
     }
