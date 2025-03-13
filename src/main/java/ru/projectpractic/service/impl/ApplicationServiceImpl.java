@@ -10,6 +10,7 @@ import ru.projectpractic.repository.ApplicationRepository;
 import ru.projectpractic.repository.JobRepository;
 import ru.projectpractic.repository.StudentRepository;
 import ru.projectpractic.service.ApplicationsService;
+import ru.projectpractic.service.validator.ApplicationValidator;
 import ru.projectpractic.utils.ApplicationsStatusEnum;
 
 import java.util.List;
@@ -20,15 +21,17 @@ public class ApplicationServiceImpl implements ApplicationsService {
     private final ObjectMapper objectMapper;
     private final JobRepository jobRepository;
     private final StudentRepository studentRepository;
+    private final ApplicationValidator applicationValidator;
 
     public ApplicationServiceImpl(
             ApplicationRepository applicationRepository,
             ObjectMapper objectMapper,
-            JobRepository jobRepository, StudentRepository studentRepository) {
+            JobRepository jobRepository, StudentRepository studentRepository, ApplicationValidator applicationValidator) {
         this.applicationRepository = applicationRepository;
         this.objectMapper = objectMapper;
         this.jobRepository = jobRepository;
         this.studentRepository = studentRepository;
+        this.applicationValidator = applicationValidator;
     }
 
     @Override
@@ -46,6 +49,8 @@ public class ApplicationServiceImpl implements ApplicationsService {
 
     @Override
     public ApplicationResponse create(ApplicationRequest request) {
+        applicationValidator.validateRequest(request);
+
         Application application = new Application();
         application.setStatus(ApplicationsStatusEnum.WAITING);
         application.setJob(jobRepository.findById(request.jobId()).orElseThrow(() ->

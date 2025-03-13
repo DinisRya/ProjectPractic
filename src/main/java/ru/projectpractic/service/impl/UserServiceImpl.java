@@ -11,12 +11,14 @@ import ru.projectpractic.entity.Employee;
 import ru.projectpractic.entity.Student;
 import ru.projectpractic.entity.User;
 import ru.projectpractic.exception.EntityNotFoundException;
+import ru.projectpractic.exception.UserNotFoundException;
 import ru.projectpractic.exception.UsernameAlreadyInUseException;
 import ru.projectpractic.repository.EmployeeRepository;
 import ru.projectpractic.repository.StudentRepository;
 import ru.projectpractic.repository.UserRepository;
 import ru.projectpractic.service.StudentService;
 import ru.projectpractic.service.UserService;
+import ru.projectpractic.service.validator.UserValidator;
 import ru.projectpractic.utils.UserRoleEnum;
 
 import java.util.List;
@@ -29,18 +31,21 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final StudentRepository studentRepository;
     private final EmployeeRepository employeeRepository;
+    private final UserValidator userValidator;
 
-    public UserServiceImpl(UserRepository userRepository, ObjectMapper objectMapper, PasswordEncoder passwordEncoder, StudentRepository studentRepository, EmployeeRepository employeeRepository) {
+    public UserServiceImpl(UserRepository userRepository, ObjectMapper objectMapper, PasswordEncoder passwordEncoder, StudentRepository studentRepository, EmployeeRepository employeeRepository, UserValidator userValidator) {
         this.userRepository = userRepository;
         this.objectMapper = objectMapper;
         this.passwordEncoder = passwordEncoder;
         this.studentRepository = studentRepository;
         this.employeeRepository = employeeRepository;
+        this.userValidator = userValidator;
     }
 
     @Override
     public UserResponse createStudent(UserRequest user) {
-        //some validate
+        userValidator.validateRequest(user);
+
         if (userRepository.findByUsername(user.username()).isPresent()) {
             throw new UsernameAlreadyInUseException(user.username());
         }
@@ -60,7 +65,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse createEmployee(UserRequest user) {
-        //some validate
+        userValidator.validateRequest(user);
+
         if (userRepository.findByUsername(user.username()).isPresent()) {
             throw new UsernameAlreadyInUseException(user.username());
         }
@@ -79,6 +85,8 @@ public class UserServiceImpl implements UserService {
     }
 
     private User createUser(UserRequest request) {
+        userValidator.validateRequest(request);
+
         var userEntity = new User();
         userEntity.setUsername(request.username());
         userEntity.setPassword(passwordEncoder.encode(request.password()));
@@ -88,10 +96,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse update(UserRequest user, Long userId) {
-        //validate exists etc
+        userValidator.validateRequest(user);
+
+        var userResponse = findById(userId);
 
         return objectMapper.convertValue(userRepository.save(
-                objectMapper.convertValue(user, User.class)),
+                objectMapper.convertValue(userResponse, User.class)),
                 UserResponse.class
         );
     }
@@ -104,17 +114,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse findById(Long id) {
-        return objectMapper.convertValue(userRepository.findById(id), UserResponse.class);
+        return objectMapper.convertValue(userRepository.findById(id).orElseThrow(() ->
+                new UserNotFoundException(id)), UserResponse.class);
     }
 
     @Override
     public void delete(Long id) {
-        //validate exists
-        userRepository.delete(userRepository.findById(id).get());
+        var user = findById(id);
+        userRepository.delete(objectMapper.convertValue(user, User.class));
     }
 
     @Override
     public UserResponse findByUsername(String username) {
+        userValidator.validateUsername(username);
+
         var user = userRepository.findByUsername(username);
         if (user.isEmpty()) {
             throw new EntityNotFoundException("User");

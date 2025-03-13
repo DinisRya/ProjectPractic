@@ -8,10 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.projectpractic.dto.CustomExceptionDTO;
-import ru.projectpractic.exception.EntityAlreadyExistsException;
-import ru.projectpractic.exception.EntityNotFoundException;
-import ru.projectpractic.exception.UserNotFoundException;
-import ru.projectpractic.exception.UsernameAlreadyInUseException;
+import ru.projectpractic.exception.*;
 
 @ControllerAdvice
 public class ExceptionControllerAdvice {
@@ -54,6 +51,14 @@ public class ExceptionControllerAdvice {
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public CustomExceptionDTO conflictUser(EntityNotFoundException e) {
+        LOGGER.info(String.format(LOG_STRING, e.getErrorType(), e.getMessage()));
+        return new CustomExceptionDTO(e.getErrorType(), e.getMessage());
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CustomExceptionDTO validationException(ValidationException e) {
         LOGGER.info(String.format(LOG_STRING, e.getErrorType(), e.getMessage()));
         return new CustomExceptionDTO(e.getErrorType(), e.getMessage());
     }

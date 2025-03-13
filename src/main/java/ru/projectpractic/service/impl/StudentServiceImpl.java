@@ -10,6 +10,7 @@ import ru.projectpractic.exception.UserNotFoundException;
 import ru.projectpractic.repository.StudentRepository;
 import ru.projectpractic.repository.UserRepository;
 import ru.projectpractic.service.StudentService;
+import ru.projectpractic.service.validator.StudentValidator;
 
 import java.util.List;
 
@@ -18,17 +19,21 @@ public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
+    private final StudentValidator studentValidator;
 
     public StudentServiceImpl(
             StudentRepository studentRepository,
-            ObjectMapper objectMapper, UserRepository userRepository) {
+            ObjectMapper objectMapper, UserRepository userRepository, StudentValidator studentValidator) {
         this.studentRepository = studentRepository;
         this.objectMapper = objectMapper;
         this.userRepository = userRepository;
+        this.studentValidator = studentValidator;
     }
 
     @Override
     public StudentResponse create(StudentRequest request) {
+        studentValidator.validateRequest(request);
+
         var student = new Student();
 
         return objectMapper.convertValue(
@@ -47,6 +52,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentResponse update(StudentRequest request, Long id) {
+        studentValidator.validateRequest(request);
+
         var student = studentRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Student"));
 
@@ -72,7 +79,8 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void delete(Long id) {
-        //validate exists
+        findById(id);
+
         studentRepository.deleteById(id);
     }
 

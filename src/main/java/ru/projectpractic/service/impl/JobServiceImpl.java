@@ -10,6 +10,7 @@ import ru.projectpractic.exception.EntityNotFoundException;
 import ru.projectpractic.repository.EmployeeRepository;
 import ru.projectpractic.repository.JobRepository;
 import ru.projectpractic.service.JobService;
+import ru.projectpractic.service.validator.JobValidator;
 
 import java.util.List;
 
@@ -18,11 +19,13 @@ public class JobServiceImpl implements JobService {
     private final JobRepository jobRepository;
     private final EmployeeRepository employeeRepository;
     private final ObjectMapper objectMapper;
+    private final JobValidator jobValidator;
 
-    public JobServiceImpl(JobRepository jobRepository, EmployeeRepository employeeRepository, ObjectMapper objectMapper) {
+    public JobServiceImpl(JobRepository jobRepository, EmployeeRepository employeeRepository, ObjectMapper objectMapper, JobValidator jobValidator) {
         this.jobRepository = jobRepository;
         this.employeeRepository = employeeRepository;
         this.objectMapper = objectMapper;
+        this.jobValidator = jobValidator;
     }
 
     @Override
@@ -49,6 +52,8 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public JobResponse create(JobRequest request) {
+        jobValidator.validateRequest(request);
+
         Job job = new Job();
         job.setDescription(request.description());
         job.setEmployee(employeeRepository.findById(request.employeeId()).orElseThrow(() ->
@@ -59,6 +64,8 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public JobResponse update(JobRequest request, Long jobId) {
+        jobValidator.validateRequest(request);
+
         Job job = jobRepository.findById(jobId).orElseThrow(() ->
                 new EntityNotFoundException("Job"));
         job.setDescription(request.description());
