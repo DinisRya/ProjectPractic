@@ -11,7 +11,6 @@
 <header th:insert="~{blocks/header :: header}"></header>
 
     <h2>Jobs</h2>
-    <a th:href="'/employees/job/add'" class="btn btn-primary mb-2">Создать мероприятие</a>
 
     <div th:each="job : ${jobs}" class="card mb-3">
         <div class="card-body">
