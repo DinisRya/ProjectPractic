@@ -54,4 +54,24 @@ public class ApplicationServiceImpl implements ApplicationsService {
                 new EntityNotFoundException("Student")));
         return objectMapper.convertValue(applicationRepository.save(application), ApplicationResponse.class);
     }
+
+    @Override
+    public List<ApplicationResponse> findAllByJobId(Long jobId) {
+        return applicationRepository.findAllByJobId(jobId).stream()
+                .map(application -> objectMapper.convertValue(application, ApplicationResponse.class)).toList();
+    }
+
+    @Override
+    public void approve(Long id) {
+        var application = applicationRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Application"));
+        application.setStatus(ApplicationsStatusEnum.APPROVED);
+    }
+
+    @Override
+    public void reject(Long id) {
+        var application = applicationRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Application"));
+        application.setStatus(ApplicationsStatusEnum.REJECTED);
+    }
 }

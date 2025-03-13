@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.projectpractic.dto.request.ApplicationRequest;
 import ru.projectpractic.dto.request.StudentRequest;
 import ru.projectpractic.dto.response.JobResponse;
+import ru.projectpractic.dto.response.StudentResponse;
 import ru.projectpractic.service.ApplicationsService;
 import ru.projectpractic.service.JobService;
 import ru.projectpractic.service.StudentService;
@@ -53,8 +54,13 @@ public class StudentController {
         return userService.findByUsername(username).id();
     }
 
-    @GetMapping("/profile")
-    public String getProfile() {
+    @GetMapping("/profile/{student_id}")
+    public String getProfile(
+            @PathVariable("student_id") Long studentId,
+            Model model
+    ) {
+        StudentResponse response = studentService.findById(studentId);
+        model.addAttribute("student", response);
         return "student_profile";
     }
 
@@ -97,5 +103,4 @@ public class StudentController {
         ), studentService.findByUserId(getUserId()).id());
         return "redirect:/welcome";
     }
-    //оформление профиля
 }

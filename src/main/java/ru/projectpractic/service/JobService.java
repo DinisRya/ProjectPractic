@@ -9,4 +9,6 @@ public interface JobService {
     JobResponse findById(Long id);
 
     List<JobResponse> findAll();
+
+    List<JobResponse> findAllByUserId(Long userId);
 }

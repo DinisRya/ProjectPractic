@@ -11,4 +11,10 @@ public interface ApplicationsService {
     List<ApplicationResponse> findAll();
 
     ApplicationResponse create(ApplicationRequest request);
+
+    List<ApplicationResponse> findAllByJobId(Long jobId);
+
+    void approve(Long id);
+
+    void reject(Long id);
 }

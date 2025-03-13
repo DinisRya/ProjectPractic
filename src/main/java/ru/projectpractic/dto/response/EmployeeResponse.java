@@ -1,4 +1,9 @@
 package ru.projectpractic.dto.response;
 
-public class EmployeeResponse {
+public record EmployeeResponse(
+        Long id,
+        String department,
+        String organization,
+        Long userId
+) {
 }
